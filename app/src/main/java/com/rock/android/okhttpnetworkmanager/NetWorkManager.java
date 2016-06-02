@@ -10,6 +10,7 @@ import com.rock.android.okhttpnetworkmanager.builder.PostFormBuilder;
 import com.rock.android.okhttpnetworkmanager.builder.PostStringBuilder;
 import com.rock.android.okhttpnetworkmanager.cache.ICacheManager;
 import com.rock.android.okhttpnetworkmanager.callback.CallBack;
+import com.rock.android.okhttpnetworkmanager.callback.FileCallBack;
 import com.rock.android.okhttpnetworkmanager.request.RequestCall;
 import com.rock.android.okhttpnetworkmanager.response.LocalResponse;
 
@@ -149,19 +150,27 @@ public class NetWorkManager {
 
             @Override
             public void onResponse(final Call call, final Response response) {
-
                 try {
                     MediaType mediaType = response.body().contentType();
-                    String resStr = response.body().string();
-                    Response newResponse = response.newBuilder().body(ResponseBody.create(mediaType, resStr)).build();
-                    Object o = finalCallback.parseNetworkResponse(new LocalResponse(resStr, newResponse.body()));
-                    if (requestCall.getOkHttpRequest().isSaveCache) {
-                        if (NetWorkManager.cacheManager != null) {
-                            System.out.println("saving cache");
-                            NetWorkManager.cacheManager.put(requestCall.getOkHttpRequest().cacheKey, resStr, requestCall.getOkHttpRequest().expire);
+                    Response newResponse;
+                    Object result;
+                    String resStr = "";
+                    if(finalCallback instanceof FileCallBack){
+                        //如果是文件那么以byte[]创建新的response
+                        newResponse = response.newBuilder().body(ResponseBody.create(mediaType, response.body().bytes())).build();
+                    }else{
+                        resStr = response.body().string();
+                        newResponse = response.newBuilder().body(ResponseBody.create(mediaType, resStr)).build();
+
+                        if (requestCall.getOkHttpRequest().isSaveCache) {
+                            if (NetWorkManager.cacheManager != null) {
+                                System.out.println("saving cache");
+                                NetWorkManager.cacheManager.put(requestCall.getOkHttpRequest().cacheKey, resStr, requestCall.getOkHttpRequest().expire);
+                            }
                         }
                     }
-                    sendSuccessCallBack(o, finalCallback);
+                    result = finalCallback.parseNetworkResponse(new LocalResponse(resStr, newResponse.body()));
+                    sendSuccessCallBack(result, finalCallback);
                 } catch (Exception e) {
                     sendFailedCallBack(call, e, finalCallback);
 
