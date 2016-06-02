@@ -1,7 +1,9 @@
-# OkHttpNetworkManager
+#OkHttpNetworkManager
+
 OkHttpNetworkManager
 
-在[hongyangAndroid](https://github.com/hongyangAndroid)的[okhttp-utils](https://github.com/hongyangAndroid/okhttp-utils)的基础上改造而来的OkHttp封装库
+###在[hongyangAndroid](https://github.com/hongyangAndroid)的[okhttp-utils](https://github.com/hongyangAndroid/okhttp-utils)的基础上改造而来的OkHttp封装库
+
 -----
 
 ##增加了缓存任何请求的能力
@@ -45,8 +47,9 @@ __cacheMode__
 ```
 saveCache(true)
 ```
-#THANKS
------
+##THANKS
+
+----
 
 [hongyangAndroid](https://github.com/hongyangAndroid)
 
